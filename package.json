@@ -6,7 +6,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "seed": "node seedUsers.js"
   },
   "repository": {
     "type": "git",
@@ -17,12 +19,13 @@
     "url": "https://github.com/RodeoVictor/thehatersvoice-backend/issues"
   },
   "homepage": "https://github.com/RodeoVictor/thehatersvoice-backend#readme",
-  "description": "",
+  "description": "Hey just a short note i think i got the database set up well ill have all extra documents that need to be ignored ill leave their codes here for the mean time hope that helps",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "faker": "^5.5.3",
     "mongoose": "^8.10.2",
     "mongoose-sequence": "^6.0.1"
   },

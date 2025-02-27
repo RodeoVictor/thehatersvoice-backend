@@ -8,3 +8,7 @@ PORT=5001
 
 kindly use nodemon server.js to run the server
 * note to self becasue i sometimes forget 
+
+To use faker, make sure to re-init to install the proper modules.
+
+Then type "node seedUsers.js" to populate the db with sample user data
