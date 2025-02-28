@@ -1,12 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('./models/User'); // Import the User model
 const Post = require('./models/Post'); // Import the Post model
 
 const router = express.Router();
 
-// Create a new user
-router.post('/users', async (req, res) => {
+// Register a new user
+router.post('/users/register', async (req, res) => {
     const { id, name, username, email, password, dob, phone } = req.body;
 
     try {
@@ -26,7 +27,7 @@ router.post('/users', async (req, res) => {
 
         // Save to the database
         await newUser.save();
-        res.status(201).json({ message: 'User created successfully', user: newUser });
+        res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (err) {
         // Handle validation errors
         if (err.name === 'ValidationError') {
@@ -121,6 +122,50 @@ router.delete('/users/:id', async (req, res) => {
         res.status(200).json({ message: 'User deleted successfully', user });
     } catch (err) {
         console.error('Error deleting user:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Login route
+router.post('/users/login', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    try {
+        // Find the user by username or email
+        const user = await User.findOne({
+            $or: [{ username: username }, { email: email }],
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Invalid username/email or password' });
+        }
+
+        // Compare the provided password with the hashed password in the database
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid username/email or password' });
+        }
+
+        // Generate a JWT token
+        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+            expiresIn: '1h', // Token valid for 1 hour
+        });
+
+        console.log('Generated Token:', token); // Optional: Log token for debugging
+
+        // Send the token as part of the response
+        res.status(200).json({
+            message: 'Login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+            },
+            token, // Return token
+        });
+    } catch (err) {
+        console.error('Error during login:', err.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
