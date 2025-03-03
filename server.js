@@ -5,6 +5,7 @@ const connectDB = require('./config/db'); // Database connection
 const userRoutes = require('./index');
 const postRoutes = require('./postIndex') // Import routes from index.js
 
+
 // Load environment variables
 dotenv.config();
 connectDB(); // Connect to MongoDB

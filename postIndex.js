@@ -36,9 +36,13 @@ const authenticate = async (req, res, next) => {
 
 //authenticate admin
 const authenticateAdmin = async (req, res, next) => {
-    await authenticate(req, res, async () => {
-        if (!req.user || !req.user.isAdmin) {
-            return res.status(403).json({ error: 'Access denied. Admin only!' });
+    await authenticate(req, res, () => {
+        if (!req.user) {
+            return res.status(401).json({ error: 'You cannot perform this action. Please log in!' });
+        }
+        
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ error: 'Access denied. Admins only!' });
         }
         next();
     });
@@ -233,5 +237,53 @@ router.delete('/admin/comments/:commentid', authenticateAdmin, async (req, res) 
     }
 });
 
+//edit any comment as Admin
+router.put('/admin/comments/:commentid', authenticateAdmin, async (req, res) => {
+    const { commentid } = req.params;
+    const { comment } = req.body;
 
-module.exports = router; // Export the router
+    try {
+        let existingComment = await Comment.findOne({ commentId: commentid });
+
+        if (!existingComment) {
+            return res.status(404).json({ error: 'Comment not found!' });
+        }
+
+        existingComment.comment = comment;
+        await existingComment.save();
+
+        res.status(200).json({ message: 'Comment updated by admin.', comment: existingComment });
+    } catch (err) {
+        console.error('Error updating comment:', err.message);
+        res.status(500).json({ error: 'Server Error Encountered!' });
+    }
+});
+
+//Edit comment as user
+router.put('/posts/:postid/comments/:commentid', authenticate, async (req, res) => {
+    const { commentid } = req.params;
+    const { comment } = req.body;
+
+    try {
+        let existingComment = await Comment.findOne({ commentId: commentid });
+        if (!existingComment) {
+            return res.status(404).json({ error: 'Comment not found!' });
+        }
+
+        //ensure user made comment
+        if (existingComment.userId !== req.user.id) {
+            return res.status(403).json({ error: 'You do not own this comment! Edit denied.' });
+        }
+
+        //modify comment
+        existingComment.comment = comment;
+        await existingComment.save();
+
+        res.status(200).json({ message: 'Comment updated!', comment: existingComment });
+    } catch (err) {
+        console.error('Error updating comment:', err.message);
+        res.status(500).json({ error: 'Server Error Encountered!' });
+    }
+});
+
+module.exports = router;

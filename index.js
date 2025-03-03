@@ -16,7 +16,7 @@ app.use(cors({
 
 // Register a new user
 router.post('/users/register', async (req, res) => {
-    const { id, name, username, email, password, dob, phone } = req.body;
+    const { id, name, username, email, password, dob, phone, isAdmin } = req.body;
 
     try {
         // Hash the password before saving
@@ -31,6 +31,7 @@ router.post('/users/register', async (req, res) => {
             password: hashedPassword,
             dob,
             phone,
+            isAdmin: isAdmin === true, 
         });
 
         // Save to the database
