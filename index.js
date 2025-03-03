@@ -1,10 +1,18 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const User = require('./models/User'); // Import the User model
 const Post = require('./models/Post'); // Import the Post model
 
 const router = express.Router();
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+})); // Enable CORS
 
 // Register a new user
 router.post('/users/register', async (req, res) => {
@@ -169,5 +177,7 @@ router.post('/users/login', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 module.exports = router; // Export the router
