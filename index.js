@@ -7,12 +7,12 @@ const Post = require('./models/Post'); // Import the Post model
 
 const router = express.Router();
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-})); // Enable CORS
+// app.use(cors({
+//     origin: 'http://localhost:5173',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true,
+// })); // Enable CORS
 
 // Register a new user
 router.post('/users/register', async (req, res) => {
