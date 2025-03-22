@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db'); // Database connection
 const userRoutes = require('./routes/userRoutes'); // Import routes from userRoutes.js
 const postRoutes = require('./routes/postRoutes') // Import routes from postRoutes.js
+const commentRoutes = require('./routes/commentRoutes'); // Import routes from commentRoutes.js
 
 
 // Load environment variables
@@ -24,9 +25,12 @@ app.get('/', (req, res) => {
 // User routes
 app.use('/api', userRoutes); // Use the routes from userRoutes.js
 
-
 // Post routes
 app.use('/api/', postRoutes); // Use the routes from postRoutes.js
+
+// Comment routes
+app.use('/api', commentRoutes); // Use the routes from commentRoutes.js
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

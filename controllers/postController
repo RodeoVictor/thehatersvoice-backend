@@ -144,6 +144,51 @@ const likePost = async (req, res) => {
     }
 };
 
+// Superuser Edit a Post
+const superuserEditPost = async (req, res) => {
+    const { postid } = req.params;
+    const { post } = req.body;
+
+    try {
+        const existingPost = await Post.findOne({ postid });
+
+        if (!existingPost) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Allow superuser to edit any post
+        existingPost.post = post;
+        await existingPost.save();
+
+        res.status(200).json({ message: 'Post updated successfully by superuser', post: existingPost });
+    } catch (err) {
+        console.error('Error updating post:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Superuser Delete a Post
+const superuserDeletePost = async (req, res) => {
+    const { postid } = req.params;
+
+    try {
+        const existingPost = await Post.findOne({ postid });
+
+        if (!existingPost) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Allow superuser to delete any post
+        await existingPost.deleteOne();
+
+        res.status(200).json({ message: 'Post deleted successfully by superuser' });
+    } catch (err) {
+        console.error('Error deleting post:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Export the updated functions
 module.exports = {
     authenticate,
     authenticateAdmin,
@@ -152,4 +197,6 @@ module.exports = {
     editPost,
     deletePost,
     likePost,
+    superuserEditPost,
+    superuserDeletePost,
 };

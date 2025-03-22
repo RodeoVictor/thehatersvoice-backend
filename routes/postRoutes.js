@@ -298,6 +298,8 @@ const {
     editPost,
     deletePost,
     likePost,
+    superuserEditPost,
+    superuserDeletePost,
 } = require('../controllers/postController');
 
 const router = express.Router();
@@ -308,5 +310,9 @@ router.get('/posts', getAllPosts);
 router.put('/posts/:postid', authenticate, editPost);
 router.delete('/posts/:postid', authenticate, deletePost);
 router.post('/posts/:postid/like', authenticate, likePost);
+
+// Superuser routes
+router.put('/admin/posts/:postid', authenticateAdmin, superuserEditPost); // Superuser edit
+router.delete('/admin/posts/:postid', authenticateAdmin, superuserDeletePost); // Superuser delete
 
 module.exports = router;
