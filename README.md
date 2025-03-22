@@ -1,6 +1,7 @@
-Hey just a short note i think i got the database set up well ill have all extra documents that need to be ignored ill leave their codes here for the mean time hope that helps 
+kindly use npm install to install any dependencies, and nodemon server.js to run the server
 
-.env file 
-```MONGO_URI=mongodb://localhost:27017/thehatersvoice
+If you would like to seed users: node seedUsers.js
+
+.env file
+MONGO_URI=mongodb://localhost:27017/thehatersvoice
 PORT=5001
-```
