@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db'); // Database connection
-const userRoutes = require('./index');
-const postRoutes = require('./postIndex') // Import routes from index.js
+const userRoutes = require('./routes/userRoutes'); // Import routes from userRoutes.js
+const postRoutes = require('./routes/postRoutes') // Import routes from postRoutes.js
 
 
 // Load environment variables
@@ -22,11 +22,11 @@ app.get('/', (req, res) => {
 });
 
 // User routes
-app.use('/api', userRoutes); // Use the routes from index.js
+app.use('/api', userRoutes); // Use the routes from userRoutes.js
 
 
 // Post routes
-app.use('/api/', postRoutes); // Use the routes from postIndex.js
+app.use('/api/', postRoutes); // Use the routes from postRoutes.js
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

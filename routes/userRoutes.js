@@ -2,8 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const User = require('./models/User'); // Import the User model
-const Post = require('./models/Post'); // Import the Post model
+const User = require('../models/User'); // Import the User model
+const Post = require('../models/Post'); // Import the Post model
 
 const router = express.Router();
 
@@ -78,6 +78,7 @@ router.get('/users', async (req, res) => {
     try {
         const users = await User.find();
         res.status(200).json(users);
+        
     } catch (err) {
         console.error('Error fetching users:', err.message);
         res.status(500).json({ error: 'Internal server error' });

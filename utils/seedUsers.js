@@ -2,7 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const faker = require('faker');
 const bcrypt = require('bcrypt');
-const User = require('./models/User'); 
+const User = require('../models/User'); 
 
 
 if (!process.env.MONGO_URI) {
@@ -63,4 +63,5 @@ const seedDatabase = async () => {
         process.exit(1);
     }
 };
-seedDatabase();
+module.exports = seedDatabase;
+// seedDatabase();
