@@ -1,0 +1,42 @@
+{
+  "name": "oswebprog",
+  "version": "1.0.0",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "start": "node server.js",
+    "seed": "node seedUsers.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RodeoVictor/thehatersvoice-backend.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/RodeoVictor/thehatersvoice-backend/issues"
+  },
+  "homepage": "https://github.com/RodeoVictor/thehatersvoice-backend#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "faker": "^5.5.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.2",
+    "mongoose-sequence": "^6.0.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.1.0"
+  }
+}
