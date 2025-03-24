@@ -53,6 +53,7 @@ const addPost = async (req, res) => {
         });
         await newPost.save();
         res.status(201).json({ message: 'Post created successfully', post: newPost });
+        console.log('New Post added by:', userId); // Optional: Log for debugging
     } catch (err) {
         console.error('Error creating post:', err.message);
         res.status(500).json({ error: 'Internal server error' });
@@ -92,6 +93,7 @@ const editPost = async (req, res) => {
         await existingPost.save();
 
         res.status(200).json({ message: 'Post updated successfully', post: existingPost });
+        console.log('Post Updated by:', existingPost.userId); // Optional: Log for debugging
     } catch (err) {
         console.error('Error updating post:', err.message);
         res.status(500).json({ error: 'Internal server error' });
