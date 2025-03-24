@@ -2,8 +2,10 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const faker = require('faker');
 const bcrypt = require('bcrypt');
-const User = require('../models/User'); 
+const path = require('path');
+const User = require(path.resolve(__dirname, '../models/User'));
 
+console.log('MONGO_URI:', process.env.MONGO_URI);
 
 if (!process.env.MONGO_URI) {
     console.error('MONGO_URI is not defined in the .env file.');
@@ -22,12 +24,14 @@ const generateUsers = async (count) => {
             continue;
         }
         users.push({
+            id: 100 + i,
             name: faker.name.findName(),
             username: faker.internet.userName(),
             email: faker.internet.email(),
             password: hashedPassword,
             dob: faker.date.past(50, new Date('2012-01-01')),
             phone: faker.phone.phoneNumber('##########'),
+            isAdmin: faker.datatype.boolean(),
         });
     }
     return users;
@@ -45,23 +49,19 @@ const connectDb = async () => {
 };
 
 const seedDatabase = async () => {
-    connectDb();
-    try {       
-        User.deleteMany({});
+    try {  
+        await connectDb();
+        await User.deleteMany({});
         console.log('Existing users deleted.');      
-        const userCount = parseInt(process.env.USER_COUNT || '50', 10); 
+        const userCount = 50;
         const sampleUsers = await generateUsers(userCount);
-        for (const userData of sampleUsers) {
-            const user = new User(userData); 
-            user.save(); 
-            console.log(`Inserted user with username: ${user.username}`);
-        }    
+        const insertedUsers = await User.insertMany(sampleUsers);
         console.log(`${sampleUsers.length} users inserted into the database.`); 
-        process.exit(0); 
     } catch (err) {
         console.error('Error seeding database:', err.message);
         process.exit(1);
-    }
+    }  
+    process.exit(0);
 };
 module.exports = seedDatabase;
-// seedDatabase();
+seedDatabase();
