@@ -1,6 +1,6 @@
+const dotenv = require('dotenv');
 const express = require('express');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
 const connectDB = require('./config/db'); // Database connection
 const userRoutes = require('./routes/userRoutes'); // Import routes from userRoutes.js
 const postRoutes = require('./routes/postRoutes') // Import routes from postRoutes.js

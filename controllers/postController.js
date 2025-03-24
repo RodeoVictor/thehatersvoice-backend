@@ -44,7 +44,7 @@ const authenticateAdmin = async (req, res, next) => {
 
 // Add a Post
 const addPost = async (req, res) => {
-    const { post } = req.body;
+    const { post, } = req.body;
 
     try {
         const newPost = new Post({

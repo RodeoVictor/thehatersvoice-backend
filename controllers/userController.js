@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { authenticate } = require('../middleware/authMiddleware');
+const express = require('express');
 const User = require('../models/User');
 
 // Register a new user
@@ -145,6 +147,20 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const getCurrentUser = async (req, res) => {
+    try {
+      console.log('Decoded user from token:', req.user);
+      const user = await User.findById(req.user.id);
+  
+      if (!user) return res.status(404).json({ error: 'User not found' });
+  
+      res.status(200).json({ message: 'You are logged in!', user });
+    } catch (err) {
+      console.error('Error in getCurrentUser:', err.message);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -152,4 +168,5 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
+    getCurrentUser,
 };

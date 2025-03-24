@@ -181,6 +181,7 @@
 // });
 
 const express = require('express');
+const { authenticate } = require('../middleware/authMiddleware');
 const {
     registerUser,
     loginUser,
@@ -188,6 +189,7 @@ const {
     getUserById,
     updateUser,
     deleteUser,
+    getCurrentUser,
 } = require('../controllers/userController');
 
 const router = express.Router();
@@ -199,5 +201,6 @@ router.get('/users', getAllUsers); // Fetch all users
 router.get('/users/:id', getUserById); // Fetch single user by ID
 router.put('/users/:id', updateUser); // Update user details
 router.delete('/users/:id', deleteUser); // Delete user
+router.get('/users/me', authenticate, getCurrentUser); //get current logged in user
 
 module.exports = router;// Export the router
