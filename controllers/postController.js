@@ -14,21 +14,19 @@ const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded; // Store decoded user info in req
 
-        // Find user in the database
         const user = await User.findOne({ id: req.user.id });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found!' });
         }
 
-        req.user.isAdmin = user.isAdmin; // Attach admin status to user
+        req.user.isAdmin = user.isAdmin;
         next();
     } catch (err) {
-        res.status(400).json({ error: 'Invalid token.' });
+        res.status(400).json({ error: 'You are not logged in. Invalid token.' });
     }
 };
 
-// Authenticate Admin Middleware
 const authenticateAdmin = async (req, res, next) => {
     await authenticate(req, res, () => {
         if (!req.user) {
@@ -42,14 +40,14 @@ const authenticateAdmin = async (req, res, next) => {
     });
 };
 
-// Add a Post
 const addPost = async (req, res) => {
-    const { post, } = req.body;
+    const { title, post } = req.body;
 
     try {
         const newPost = new Post({
-            userId: req.user.id, // Use the authenticated user's ID
-            post, // Post content
+            userId: req.user.id,
+            title,
+            post,
         });
         await newPost.save();
         res.status(201).json({ message: 'Post created successfully', post: newPost });
@@ -59,21 +57,19 @@ const addPost = async (req, res) => {
     }
 };
 
-// Get All Posts
 const getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find(); // Fetch all posts
-        res.status(200).json(posts); // Return the posts as JSON
+        const posts = await Post.find();
+        res.status(200).json(posts);
     } catch (err) {
         console.error('Error fetching posts:', err.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-// Edit a Post
 const editPost = async (req, res) => {
     const { postid } = req.params;
-    const { post } = req.body;
+    const { title, post } = req.body;
 
     try {
         const existingPost = await Post.findOne({ postid });
@@ -82,12 +78,11 @@ const editPost = async (req, res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        // Check if the authenticated user is the owner of the post
         if (existingPost.userId !== req.user.id) {
             return res.status(403).json({ error: 'You are not authorized to edit this post.' });
         }
 
-        // Update the post content
+        existingPost.title = title;
         existingPost.post = post;
         await existingPost.save();
 
@@ -98,7 +93,6 @@ const editPost = async (req, res) => {
     }
 };
 
-// Delete a Post
 const deletePost = async (req, res) => {
     const { postid } = req.params;
 
@@ -109,7 +103,6 @@ const deletePost = async (req, res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        // Check if the authenticated user is the owner of the post
         if (existingPost.userId !== req.user.id) {
             return res.status(403).json({ error: 'You are not authorized to delete this post.' });
         }
@@ -123,31 +116,46 @@ const deletePost = async (req, res) => {
     }
 };
 
-// Like a Post
 const likePost = async (req, res) => {
     const { postid } = req.params;
-
+  
     try {
-        const existingPost = await Post.findOne({ postid });
-
-        if (!existingPost) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-
-        existingPost.likeCount += 1; // Increment the like count
-        await existingPost.save();
-
-        res.status(200).json({ message: 'Post liked successfully', post: existingPost });
+      const post = await Post.findOne({ postid });
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+  
+      const userId = req.user.id;
+  
+      const hasLiked = post.likedBy.includes(userId);
+  
+      if (hasLiked) {
+        //if user has already liked - remove like
+        post.likedBy = post.likedBy.filter(id => id !== userId);
+        post.likeCount = Math.max(0, post.likeCount - 1); //safety check
+      } else {
+        //user hasn't liked – add like
+        post.likedBy.push(userId);
+        post.likeCount += 1;
+      }
+  
+      await post.save();
+  
+      res.status(200).json({
+        //logging
+        message: hasLiked ? 'Post unliked successfully' : 'Post liked successfully',
+        post,
+      });
     } catch (err) {
-        console.error('Error liking post:', err.message);
-        res.status(500).json({ error: 'Internal server error' });
+      console.error('Error toggling like:', err.message);
+      res.status(500).json({ error: 'Internal server error' });
     }
-};
+  };
+  
 
-// Superuser Edit a Post
 const superuserEditPost = async (req, res) => {
     const { postid } = req.params;
-    const { post } = req.body;
+    const { title, post } = req.body;
 
     try {
         const existingPost = await Post.findOne({ postid });
@@ -156,7 +164,7 @@ const superuserEditPost = async (req, res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        // Allow superuser to edit any post
+        existingPost.title = title;
         existingPost.post = post;
         await existingPost.save();
 
@@ -167,7 +175,6 @@ const superuserEditPost = async (req, res) => {
     }
 };
 
-// Superuser Delete a Post
 const superuserDeletePost = async (req, res) => {
     const { postid } = req.params;
 
@@ -178,7 +185,6 @@ const superuserDeletePost = async (req, res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        // Allow superuser to delete any post
         await existingPost.deleteOne();
 
         res.status(200).json({ message: 'Post deleted successfully by superuser' });
@@ -188,7 +194,6 @@ const superuserDeletePost = async (req, res) => {
     }
 };
 
-// Export the updated functions
 module.exports = {
     authenticate,
     authenticateAdmin,
