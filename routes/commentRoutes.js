@@ -7,8 +7,13 @@ const {
     superuserEditComment,
     superuserDeleteComment,
 } = require('../controllers/commentController');
+<<<<<<< HEAD
 const { authenticate } = require('../controllers/postController.js'); // Use the existing authentication middleware
 const{ authenticateAdmin} = require('../controllers/postController.js'); // Use the existing admin middleware
+=======
+const { authenticate } = require('../controllers/postController'); // Use the existing authentication middleware
+const{ authenticateAdmin} = require('../controllers/postController'); // Use the existing admin middleware
+>>>>>>> 4c8741e04a262b165c57a4ae1be8be4a02e7b2c2
 const router = express.Router();
 
 // Comment routes

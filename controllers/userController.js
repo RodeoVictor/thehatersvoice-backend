@@ -57,7 +57,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user.id, username: user.username, isAdmin: user.isAdmin }, // Include isAdmin here
+            { id: user.id, username: user.username, isAdmin: user.isAdmin }, // Include isAdmin here for superuser verification
             process.env.JWT_SECRET,
             { expiresIn: '12h' }
         );
@@ -71,6 +71,7 @@ const loginUser = async (req, res) => {
             },
             token,
         });
+        console.log('Generated Token:', token); // Optional: Log token for debugging
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -92,6 +93,8 @@ const getUserById = async (req, res) => {
 
     try {
         const user = await User.findOne({ id });
+
+        console.log('User fetched:', id);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -122,6 +125,8 @@ const updateUser = async (req, res) => {
 
         await user.save();
         res.status(200).json({ message: 'User updated successfully', user });
+
+        console.log('User updated:', user.username);
     } catch (err) {
         if (err.code === 11000) {
             const duplicateField = Object.keys(err.keyValue)[0];
@@ -142,6 +147,7 @@ const deleteUser = async (req, res) => {
         }
 
         res.status(200).json({ message: 'User deleted successfully', user });
+        console.log('User deleted:', user.username);
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
     }

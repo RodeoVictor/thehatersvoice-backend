@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // const express = require('express');
 // const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
@@ -289,6 +290,8 @@
 // module.exports = router;
 
 
+=======
+>>>>>>> 4c8741e04a262b165c57a4ae1be8be4a02e7b2c2
 const express = require('express');
 const {
     authenticate,
@@ -300,7 +303,11 @@ const {
     likePost,
     superuserEditPost,
     superuserDeletePost,
+<<<<<<< HEAD
 } = require('../controllers/postController.js');
+=======
+} = require('../controllers/postController');
+>>>>>>> 4c8741e04a262b165c57a4ae1be8be4a02e7b2c2
 
 const router = express.Router();
 

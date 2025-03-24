@@ -6,9 +6,13 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+=======
+    "test": "echo \"Error: no test specified\" && exit 1",
+>>>>>>> 4c8741e04a262b165c57a4ae1be8be4a02e7b2c2
     "start": "node server.js",
     "seed": "node seedUsers.js"
   },
@@ -35,8 +39,12 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "supertest": "^7.1.0"
+=======
+    "nodemon": "^3.1.9"
+>>>>>>> 4c8741e04a262b165c57a4ae1be8be4a02e7b2c2
   }
 }
