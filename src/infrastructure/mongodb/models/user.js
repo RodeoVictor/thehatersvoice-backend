@@ -1,5 +1,7 @@
+"use strict";
+
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose); // Import mongoose-sequence
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const userSchema = new mongoose.Schema({
     id: { type: Number, unique: true }, // Auto-incremented primary key
@@ -9,9 +11,10 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: [true, 'Password is required'] },
     dob: { type: Date, required: [true, 'Date of Birth is required'] },
     phone: { type: String, required: [true, 'Phone number is required'] },
-    isAdmin: { type: Boolean, default: false }, //added for superuser methods
+    isAdmin: { type: Boolean, default: false } // Added for superuser methods
 });
 
+// Add the auto-increment plugin
 userSchema.plugin(AutoIncrement, { inc_field: 'id', start_seq: 100 });
 
 module.exports = mongoose.model('User', userSchema);
