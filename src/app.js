@@ -3,9 +3,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 // Import routes
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoutes');
-const commentRoutes = require('./routes/commentRoutes');
+const userRoutes = require('./ports/routes/userRoutes');
+const postRoutes = require('./ports/routes/postRoutes');
+const commentRoutes = require('./ports/routes/commentRoutes');
 
 const app = express();
 

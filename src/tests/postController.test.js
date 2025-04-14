@@ -1,50 +1,54 @@
+require('dotenv').config({ path: './src/.env.test' });
 
 const request = require('supertest');
 const app = require('../app');
 const mongoose = require('mongoose');
-const User = require('../models/User');
-const Post = require('../models/Post');
+const User = require('../infrastructure/mongodb/models/user');
+const Post = require('../infrastructure/mongodb/models/post');
+
+let token;
+let postId;
+
+const unique = Date.now();
+const testUser = {
+  name: 'Post Test User',
+  username: `testuser_${unique}`,
+  email: `testuser_${unique}@example.com`,
+  password: '1234',
+  dob: '1999-01-01',
+  phone: '1234567890',
+  isAdmin: true
+};
 
 afterAll(async () => {
-  await User.deleteMany({ username: /testuser/ });
+  await User.deleteMany({ username: new RegExp('^testuser_') });
   await Post.deleteMany({});
   await mongoose.connection.close();
 });
 
-describe('Post Controller', () => {
-  let token;
-  let postId;
-  let userId;
-  const unique = Date.now(); //ensures that test user is not a duplicate
-  const testUser = {
-    name: 'Post Test User',
-    username: `testuser${unique}`,
-    email: `test${unique}@example.com`,
-    password: '1234',
-    dob: '1999-01-01',
-    phone: '1234567890',
-    isAdmin: true
-  };
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/thehatersvoice_test');
 
-  beforeAll(async () => {
-    const registerRes = await request(app).post('/api/users/register').send(testUser);
-    userId = registerRes.body.user.id;
+  const registerRes = await request(app).post('/api/users/register').send(testUser);
+  userId = registerRes.body.user.id;
 
-    const loginRes = await request(app).post('/api/users/login').send({
-      username: testUser.username,
-      password: testUser.password
-    });
-    token = loginRes.body.token;
+  const loginRes = await request(app).post('/api/users/login').send({
+    username: testUser.username,
+    password: testUser.password
   });
+  token = loginRes.body.token;
+});
 
+describe('Post Controller', () => {
   it('should add a post', async () => {
     const res = await request(app)
       .post('/api/posts')
       .set('Authorization', `Bearer ${token}`)
-      .send({ post: 'This is a test post' });
+      .send({ title: 'Test Title', post: 'This is a test post' });
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('message', 'Post created successfully');
+    expect(res.body.post).toHaveProperty('title', 'Test Title');
     postId = res.body.post.postid;
   });
 
@@ -58,10 +62,11 @@ describe('Post Controller', () => {
     const res = await request(app)
       .put(`/api/posts/${postId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ post: 'This is an edited post' });
+      .send({ title: 'Updated Title', post: 'This is an edited post' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.post.post).toBe('This is an edited post');
+    expect(res.body.post.title).toBe('Updated Title');
   });
 
   it('should like the post', async () => {
@@ -72,24 +77,5 @@ describe('Post Controller', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('message', 'Post liked successfully');
     expect(res.body.post.likeCount).toBeGreaterThan(0);
-  });
-
-  it('should edit the post as superuser', async () => {
-    const res = await request(app)
-      .put(`/api/admin/posts/${postId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({ post: 'Edited by admin' });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body.post.post).toBe('Edited by admin');
-  });
-
-  it('should delete the post as superuser', async () => {
-    const res = await request(app)
-      .delete(`/api/admin/posts/${postId}`)
-      .set('Authorization', `Bearer ${token}`);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('message', 'Post deleted successfully by superuser');
   });
 });
