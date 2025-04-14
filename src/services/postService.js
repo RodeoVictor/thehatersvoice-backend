@@ -21,22 +21,28 @@ module.exports = {
 
     async editPost(postid, title, postContent, userId) {
         console.log('editPost called with:', { postid, title, postContent, userId });
-
+    
         const existingPost = await Post.findOne({ postid });
         if (!existingPost) {
             console.error('Post not found for postid:', postid);
             throw { status: 404, message: 'Post not found' };
         }
-
+    
         if (existingPost.userId !== userId) {
             console.error('Unauthorized to edit post:', { postid, userId });
             throw { status: 403, message: 'Unauthorized to edit this post' };
         }
-
-        existingPost.title = title;
-        existingPost.post = postContent;
+    
+        if (typeof title === 'string' && title.trim()) {
+            existingPost.title = title;
+        }
+    
+        if (typeof postContent === 'string') {
+            existingPost.post = postContent;
+        }
+    
         await existingPost.save();
-
+    
         console.log('Post updated successfully:', existingPost);
         return { message: 'Post updated successfully', post: existingPost };
     },

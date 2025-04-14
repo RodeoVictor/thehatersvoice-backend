@@ -48,17 +48,22 @@ module.exports = {
         }
     },
 
-    async superuserEditComment(req, res) {
-        try {
-            const { commentId } = req.params;
-            const { comment } = req.body;
+async superuserEditComment(req, res) {
+    try {
+        const { commentId } = req.params;
+        const { comment } = req.body;
+        const userId = req.user?.id; // Get userId from req.user
 
-            const response = await commentService.superuserEditComment(commentId, comment);
-            res.status(200).json(response);
-        } catch (err) {
-            res.status(err.status || 500).json({ error: err.message });
+        if (!userId) {
+            return res.status(400).json({ error: 'User is not authenticated' });
         }
-    },
+
+        const response = await commentService.superuserEditComment(commentId, comment, userId);
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message });
+    }
+},
 
     async superuserDeleteComment(req, res) {
         try {
