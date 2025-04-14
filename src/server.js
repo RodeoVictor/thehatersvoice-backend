@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/config'); // Database connection
+dotenv.config({ path: './.env' }); // Explicitly point to root-level .env
 
 // Import routes
 const userRoutes = require('./ports/routes/userRoutes');

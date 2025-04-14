@@ -1,17 +1,61 @@
-FROM node:18-alpine
+# This line is specifying the base image from which you are building.
+# `node:16` is the official image for Node.js 16.
+FROM node:16
 
-# Create app directory
+# Sets the working directory for any following ADD, COPY, CMD, ENTRYPOINT, or RUN instructions
+# that follows will be carried out in /app directory.
 WORKDIR /app
 
-# Copy package files and install deps
+# The COPY instruction copies new files from package.json and
+# adds them to the filesystem of the container at the path ./.
 COPY package*.json ./
+
+# Sets the correct permissions to the docker-entrypoint.sh script
+# to allow for it to be executed.
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# RUN is executing the npm install command which is a Node.js package manager command that
+# lets you install all modules listed in your package.json file.
 RUN npm install
 
-# Copy rest of the project
+# Copies the rest of our application code into the Docker image.
 COPY . .
 
-# Expose port
-EXPOSE 5001
+# Here we are setting several environment variables that our application is expecting:
+# MONGO_USERNAME, MONGO_HOST, MONGO_PORT, MONGO_DATABASE which are credentials of the MongoDB.
+ENV MONGO_USERNAME=root
+ENV MONGO_HOST=localhost
+ENV MONGO_PORT=27017
+ENV MONGO_DATABASE=CustomerDatabase
 
-# Start the app
+# HEALTHCHECK instruction tells Docker to test a container to check that it is still working.
+# This Dockerfile uses curl to check the /healthcheck endpoint of the service.
+HEALTHCHECK CMD curl --fail http://localhost:3000/healthcheck || exit 1
+
+# Takes the application built by npm and exposes it on port 3000.
+# This allows you to communicate with the application.
+EXPOSE 3000
+
+# Provides the defaults for an executing container.
+# This Dockerfile specifies that the npm start script should be run.
 CMD ["node", "src/server.js"]
+
+# Commands to run below:
+
+# Log into Docker
+# docker login
+
+# To build the docker image run the following commmand:
+# docker build -t {username}/{docker image name}:{version} .
+
+# To run the image in a container run the following command:
+# docker run -p 3000:3000 {image id}
+
+# To push the docker image to remote docker hub
+# docker push {username}/{docker image name}:{version}
+
+# To pull the image from docker hub run the command:
+# docker pull {username}/{docker image name}:{version}
+
+
+
